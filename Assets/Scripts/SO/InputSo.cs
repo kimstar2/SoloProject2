@@ -5,23 +5,24 @@ using UnityEngine.InputSystem;
 namespace SO
 {
     [CreateAssetMenu(fileName = "Input data", menuName = "SO/Input/Input data", order = 0)]
-    public class InputSo : ScriptableObject , Control.IPlayerActions
+    public class InputSo : ScriptableObject, Control.IPlayerActions
     {
         private Control _controls;
-        
+
         # region IPlayerActions
-        public event Action OnDashEvent;
-        /*============================================================================================================*/
         public event Action<bool> OnInteractKeyPressed;
         public event Action<bool> OnSprintKeyPressed;
         public event Action<bool> OnCrouchKeyPressed;
         public event Action<bool> OnAttackKeyPressed;
+        public event Action<Vector2> OnMoveInputChanged;
+        public event Action OnDashEvent;
         # endregion IPlayerActions
-        
-        public Vector2 MovementInput {get; private set;}
-        public Vector2 PointerInput {get; private set;}
-        
+
+        public Vector2 MovementInput { get; private set; }
+        public Vector2 PointerInput { get; private set; }
+
         # region Life
+
         private void OnEnable()
         {
             if (_controls == null)
@@ -29,19 +30,30 @@ namespace SO
                 _controls = new Control();
                 _controls.Player.SetCallbacks(this);
             }
+
             _controls.Enable();
         }
 
         private void OnDisable() => _controls?.Disable();
+
         # endregion Life
 
+        
         # region ReadValue
-        public void OnMove(InputAction.CallbackContext context) => MovementInput = context.ReadValue<Vector2>();
-
+        
         public void OnLook(InputAction.CallbackContext context) => PointerInput = context.ReadValue<Vector2>();
+
         # endregion ReadValue
 
+        
         # region Actions
+
+        public void OnMove(InputAction.CallbackContext context)
+        {
+            MovementInput = context.ReadValue<Vector2>();
+            OnMoveInputChanged?.Invoke(MovementInput);
+        }
+
         public void OnAttack(InputAction.CallbackContext context)
         {
             if (context.performed)
@@ -66,11 +78,6 @@ namespace SO
                 OnCrouchKeyPressed?.Invoke(false);
         }
 
-        public void OnDash(InputAction.CallbackContext context)
-        {
-            if (context.performed)
-                OnDashEvent?.Invoke();
-        }
 
         public void OnSprint(InputAction.CallbackContext context)
         {
@@ -79,6 +86,13 @@ namespace SO
             if (context.canceled)
                 OnSprintKeyPressed?.Invoke(false);
         }
+        
+        public void OnDash(InputAction.CallbackContext context)
+        {
+            if (context.performed)
+                OnDashEvent?.Invoke();
+        }
+
         # endregion Actions
     }
 }

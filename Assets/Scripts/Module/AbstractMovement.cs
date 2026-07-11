@@ -1,15 +1,18 @@
-using Module;
+using Interface;
 using UnityEngine;
 
-namespace Agent
+namespace Module
 {
-    public class AgentMovement : MonoBehaviour , IModule
+    public abstract class AbstractMovement : MonoBehaviour , IMoveable , IRigidGettable
     {
-        public ModuleCompo Owner { get; private set; }
-        public void Init(ModuleCompo owner) => Owner = owner;
-        
         [field:SerializeField] public Rigidbody2D RbCompo {get; private set;}
         [field:SerializeField] public float Speed {get; private set;}
+        protected Vector2 MoveDir;
+
+        public void SetMoveDir(Vector2 moveDir)
+        {
+            MoveDir = moveDir;
+        }
 
         public void Move(Vector2 direction)
         {

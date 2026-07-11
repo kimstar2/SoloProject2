@@ -1,14 +1,11 @@
-using Module;
+using Interface;
 using SO;
 using UnityEngine;
 
-namespace Player
+namespace Module
 {
     public class InputModule : MonoBehaviour , IModule
     {
         [field:SerializeField] public InputSo Input {get; private set;}
-        public ModuleCompo Owner { get; private set; }
-        
-        public void Init(ModuleCompo owner) => Owner = owner;
     }
 }

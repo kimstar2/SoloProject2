@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Interface;
 using UnityEngine;
 
 namespace Module
@@ -15,11 +16,9 @@ namespace Module
                 .GroupBy(module => module
                     .GetType())
                 .ToDictionary(g => g.Key, g => g.First());
-            foreach (IModule module in _moduleDict.Values)
-                module.Init(this);
         }
 
-        public T GetModule<T>() where T : class , IModule
+        protected T GetModule<T>() where T : class , IModule
         {
             if (_moduleDict.TryGetValue(typeof(T), out var module))
                 return module as T;
