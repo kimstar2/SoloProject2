@@ -3,14 +3,14 @@ using Module;
 
 namespace Agent
 {
-    public abstract class AbstractAgent : ModuleCompo
+    public abstract class AbstractAgent : AgentModule
     {
-        protected AnimatorModule AnimatorModule { get; private set; }
+        protected AnimModule AnimModule { get; private set; }
 
         protected override void Awake()
         {
             base.Awake();
-            AnimatorModule = GetModule<AnimatorModule>();
+            AnimModule = GetModule<AnimModule>();
         }
     }
 }

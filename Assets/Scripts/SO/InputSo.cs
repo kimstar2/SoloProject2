@@ -1,4 +1,5 @@
 using System;
+using Interface;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,7 +9,10 @@ namespace SO
     public class InputSo : ScriptableObject, Control.IPlayerActions
     {
         private Control _controls;
+        public Vector2 MovementInput { get; private set; }
+        public Vector2 PointerInput { get; private set; }
 
+        
         # region IPlayerActions
         public event Action<bool> OnInteractKeyPressed;
         public event Action<bool> OnSprintKeyPressed;
@@ -17,9 +21,7 @@ namespace SO
         public event Action<Vector2> OnMoveInputChanged;
         public event Action OnDashEvent;
         # endregion IPlayerActions
-
-        public Vector2 MovementInput { get; private set; }
-        public Vector2 PointerInput { get; private set; }
+        
 
         # region Life
 
@@ -37,14 +39,14 @@ namespace SO
         private void OnDisable() => _controls?.Disable();
 
         # endregion Life
-
+        
         
         # region ReadValue
         
         public void OnLook(InputAction.CallbackContext context) => PointerInput = context.ReadValue<Vector2>();
 
         # endregion ReadValue
-
+        
         
         # region Actions
 

@@ -1,30 +1,31 @@
 using Agent;
+using Interface;
 using Module;
 
 namespace Player
 {
     public class PlayerController : AbstractAgent
     {
-        private InputModule _inputModule;
-        private MovementPlus _movementPlus;
+        private InputModule _input;
+        private PlayerMovementModule _mover;
 
         protected override void Awake()
         {
             base.Awake();
-            _inputModule = GetModule<InputModule>();
-            _movementPlus = GetModule<MovementPlus>();
+            _input = GetModule<InputModule>();
+            _mover = GetModule<PlayerMovementModule>();
         }
 
         private void OnEnable()
         {
-            _inputModule.Input.OnMoveInputChanged += _movementPlus.SetMoveDir;
-            _inputModule.Input.OnDashEvent += _movementPlus.Dash;
+            _input.Input.OnMoveInputChanged += _mover.SetMoveDir;
+            _input.Input.OnDashEvent += _mover.Dash;
         }
 
         private void OnDisable()
         {
-            _inputModule.Input.OnMoveInputChanged -= _movementPlus.SetMoveDir;
-            _inputModule.Input.OnDashEvent -= _movementPlus.Dash;
+            _input.Input.OnMoveInputChanged -= _mover.SetMoveDir;
+            _input.Input.OnDashEvent -= _mover.Dash;
         }
     }
 }

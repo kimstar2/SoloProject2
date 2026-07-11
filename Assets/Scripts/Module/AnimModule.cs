@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Module
 {
-    public class AnimatorModule : MonoBehaviour , IModule
+    public class AnimModule : MonoBehaviour , IAgentModule
     {
     }
 }
