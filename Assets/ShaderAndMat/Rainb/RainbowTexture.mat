@@ -110,7 +110,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _EmissionVal: 0.71
+    - _EmissionVal: 0
     - _EnableExternalAlpha: 0
     - _Rot: 1.08
     - _Speed: 0.4
@@ -121,7 +121,7 @@ Material:
     m_Colors:
     - White: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _HDR: {r: 0.43019885, g: 0.43019885, b: 0.43019885, a: 1}
+    - _HDR: {r: 3.211117, g: 3.211117, b: 3.211117, a: 1}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
