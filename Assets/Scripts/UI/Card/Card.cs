@@ -1,20 +1,21 @@
 using System;
 using Interface;
-using Module;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Utility;
 
-namespace UI
+namespace UI.Card
 {
     [RequireComponent(typeof(CanvasGroup))]
-    public abstract class Card : ForRect, ICard, IEndDragHandler, IDragHandler, IBeginDragHandler, IDraggable
+    public class Card : ForRect, ICard, IEndDragHandler, IDragHandler, IBeginDragHandler, IDraggable
     {
         public bool IsDragging { get; private set; }
         public bool CanDrag { get; private set; } = true;
+        
         private RectTransform _parentRect;
         private Vector2 _pointerOffset;
         private Vector2 _beforePos;
+        
         public event Action OnBeginDragEvent;
         public event Action OnEndDragEvent;
 

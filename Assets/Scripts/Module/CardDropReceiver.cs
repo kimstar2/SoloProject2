@@ -1,5 +1,6 @@
 using Interface;
 using UI;
+using UI.Card;
 using UnityEngine;
 using UnityEngine.EventSystems;
 

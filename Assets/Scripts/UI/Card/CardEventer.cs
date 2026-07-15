@@ -1,7 +1,7 @@
 using Interface;
 using Module;
 
-namespace UI
+namespace UI.Card
 {
     public class CardEventer : ModuleCompo , IInitType
     {

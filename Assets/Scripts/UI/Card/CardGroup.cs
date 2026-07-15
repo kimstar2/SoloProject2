@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 using Interface;
 using UnityEngine;
 
-namespace UI
+namespace UI.Card
 {
     public class CardGroup : MonoBehaviour
     {
