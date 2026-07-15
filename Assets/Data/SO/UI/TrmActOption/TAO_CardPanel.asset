@@ -51,7 +51,7 @@ MonoBehaviour:
     addScaleX: 0
     addScaleY: 0
     addScaleZ: 0
-    scaleDur: 0.5
+    scaleDur: 1
     scaleEase: 24
   offEvent:
     m_PersistentCalls:

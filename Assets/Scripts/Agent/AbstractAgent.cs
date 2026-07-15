@@ -1,10 +1,8 @@
-using System;
 using Module;
-using Unity.VisualScripting.Dependencies.NCalc;
 
 namespace Agent
 {
-    public abstract class Abstract : ModuleCompo
+    public abstract class AbstractAgent : ModuleCompo
     {
         protected AnimModule AnimModule { get; private set; }
 

@@ -1,12 +1,14 @@
 using System;
 using Interface;
+using Module;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Utility;
 
 namespace UI
 {
     [RequireComponent(typeof(CanvasGroup))]
-    public class Card : ForRect, ICard, IEndDragHandler, IDragHandler, IBeginDragHandler , IDropHandler , IDraggable
+    public abstract class Card : ForRect, ICard, IEndDragHandler, IDragHandler, IBeginDragHandler, IDraggable
     {
         public bool IsDragging { get; private set; }
         public bool CanDrag { get; private set; } = true;
@@ -40,11 +42,11 @@ namespace UI
             _parentRect = Rect.parent as RectTransform;
             _beforePos = Rect.anchoredPosition;
 
-            bool success = Screen2LocalPos(_parentRect,eventData.position, eventData.pressEventCamera, out var camPos);
+            bool success = RectTransformUtilityPlus.ScreenToLocalPos(_parentRect,eventData.position, eventData.pressEventCamera, out var localPos);
             
             if (!success) return;
             
-            _pointerOffset = Rect.anchoredPosition - camPos;
+            _pointerOffset = Rect.anchoredPosition - localPos;
             IsDragging = true;
             
             OnBeginDragEvent?.Invoke();
@@ -56,20 +58,11 @@ namespace UI
             if (!IsDragging) return;
             if (eventData.button != PointerEventData.InputButton.Left) return;
 
-            bool success = Screen2LocalPos(_parentRect,eventData.position, eventData.pressEventCamera, out var camPos);
+            bool success = RectTransformUtilityPlus.ScreenToLocalPos(_parentRect,eventData.position, eventData.pressEventCamera, out var localPos);
             
             if (!success) return;
             
-            Rect.anchoredPosition = camPos + _pointerOffset;
-        }
-        
-        public static bool Screen2LocalPos(RectTransform rect , Vector3 screenPos , Camera cam, out Vector2 camPos)
-        {
-            return RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                rect,
-                screenPos,
-                cam,
-                out camPos);
+            Rect.anchoredPosition = localPos + _pointerOffset;
         }
 
         public void OnEndDrag(PointerEventData eventData) // End
@@ -87,15 +80,5 @@ namespace UI
         }
         
         #endregion Drag
-
-        public void OnDrop(PointerEventData eventData)
-        {
-            GameObject draggedGo = eventData.pointerDrag;
-            
-            if (draggedGo == null) return;
-            if (!draggedGo.TryGetComponent(out ICardDropTarget card)) return;
-            card.ReceiveCard(this);
-        }
-
     }
 }
