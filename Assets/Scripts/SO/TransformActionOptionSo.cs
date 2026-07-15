@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Structure;
+using Struct;
 using UnityEngine;
 using UnityEngine.Events;
 

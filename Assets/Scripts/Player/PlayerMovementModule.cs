@@ -9,26 +9,64 @@ using UnityEngine;
 
 namespace Player
 {
-    public class PlayerMovementModule : AbstractMovementModule , IDash
+    public class PlayerMovementModule : AbstractMovementModule, IDash
     {
-        [Header("Dash")]
-        [field:SerializeField] public DashDataSo DashData { get; private set; }
-        private float _crtMulti = 0f;
-        private bool _canDash = true;
-        public bool IsDash { get; private set; }
+        [Header("ReferenceData")]
+        [field: SerializeField]
+        public DashDataSo OriginDashData { get; private set; }
+        public DashDataSo DashData { get; private set; }
         
-        private void FixedUpdate() {
+        private bool _canDash = true;
+        private float _crtMulti;
+        public bool IsDash { get; private set; }
+
+
+        private void Awake()
+        {
+            CloneData();
+        }
+
+        private void FixedUpdate()
+        {
             if (IsDash)
                 Move(MoveDir * _crtMulti);
             else
                 Move(MoveDir);
         }
-        
+
+        private void OnDestroy()
+        {
+            DestroyData();
+        }
+
+        # region Data
+
+        private void DestroyData()
+        {
+            if (DashData != null)
+                Destroy(DashData);
+        }
+
+        private void CloneData()
+        {
+            if (OriginDashData == null)
+            {
+                Debug.LogError("DashData가 할당되지 않았습니다.", this);
+                enabled = false;
+                return;
+            }
+
+            DashData = Instantiate(OriginDashData);
+        }
+
+        # endregion Data
+
         # region Dash
-        
+
         public void Dash() // 대쉬 입력
         {
-            if (!_canDash) return;
+            if (!_canDash || DashData == null)
+                return;
             DashLogic();
             DashCooldown(destroyCancellationToken).Forget();
         }
@@ -49,10 +87,10 @@ namespace Player
         private async UniTask DashCooldown(CancellationToken token) // 대쉬 쿨타임
         {
             _canDash = false;
-            await UniTask.Delay(TimeSpan.FromSeconds(DashData.dashDur + DashData.dashCool) , cancellationToken: token);
+            await UniTask.Delay(TimeSpan.FromSeconds(DashData.dashDur + DashData.dashCool), cancellationToken: token);
             _canDash = true;
         }
-        
+
         # endregion Dash
     }
 }

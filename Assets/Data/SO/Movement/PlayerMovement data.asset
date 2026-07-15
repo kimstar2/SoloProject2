@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dac4dd5d68d4a8e89b50dce8098bd9c, type: 3}
   m_Name: PlayerMovement data
   m_EditorClassIdentifier: Assembly-CSharp::SO.MovementDataSo
-  speed: 3
+  speed: 8

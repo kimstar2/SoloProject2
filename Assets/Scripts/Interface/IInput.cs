@@ -2,7 +2,7 @@ using SO;
 
 namespace Interface
 {
-    public interface IInput : IAgentModule
+    public interface IInput : IModule
     {
         InputSo Input { get; }
     }

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eac831a27e24c7380f7e145deeb63c5, type: 3}
   m_Name: PlayerDash data
   m_EditorClassIdentifier: Assembly-CSharp::SO.DashDataSo
-  dashMulti: 2
-  dashDur: 0.3
+  dashMulti: 12
+  dashDur: 0.4
   dashCool: 0.2

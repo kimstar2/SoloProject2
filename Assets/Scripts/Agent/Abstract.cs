@@ -4,7 +4,7 @@ using Unity.VisualScripting.Dependencies.NCalc;
 
 namespace Agent
 {
-    public abstract class AbstractAgent : AgentModule
+    public abstract class Abstract : ModuleCompo
     {
         protected AnimModule AnimModule { get; private set; }
 

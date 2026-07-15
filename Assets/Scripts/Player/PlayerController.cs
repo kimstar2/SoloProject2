@@ -4,7 +4,7 @@ using Module;
 
 namespace Player
 {
-    public class PlayerController : AbstractAgent
+    public class PlayerController : Abstract
     {
         private InputModule _input;
         private PlayerMovementModule _mover;

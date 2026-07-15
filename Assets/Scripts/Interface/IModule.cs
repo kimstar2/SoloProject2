@@ -2,5 +2,5 @@ using Module;
 
 namespace Interface
 {
-    public interface IAgentModule { }
+    public interface IModule { }
 }

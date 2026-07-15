@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using SO;
-using Structure;
+using Struct;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
@@ -39,12 +39,15 @@ namespace UI
         private void GoAction(TransformAction crt)
         {
             DOTween.Kill(_id);
-            Rect.DOScale(crt.Scale, crt.scaleDur)
+            Vector3 scaleTarget = crt.GetScaleTarget(Rect.localScale);
+            Vector3 rotationTarget = crt.GetRotationTarget(Rect.localEulerAngles);
+
+            Rect.DOScale(scaleTarget, crt.scaleDur)
                 .SetEase(crt.scaleEase)
                 .SetLink(gameObject, LinkBehaviour.KillOnDisable)
                 .SetId(_id);
 
-            Rect.DORotate(crt.Rotation, crt.rotDur)
+            Rect.DOLocalRotate(rotationTarget, crt.rotDur)
                 .SetEase(crt.rotEase)
                 .SetLink(gameObject, LinkBehaviour.KillOnDisable)
                 .SetId(_id);

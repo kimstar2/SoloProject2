@@ -2,9 +2,9 @@ using SO;
 
 namespace Interface
 {
-    public interface IDash : IAgentModule
+    public interface IDash : IModule
     {
-        DashDataSo DashData { get; }
+        DashDataSo OriginDashData { get; }
         bool IsDash { get; }
         
         void Dash();

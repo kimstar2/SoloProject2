@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Module
 {
-    public abstract class AbstractMovementModule : MonoBehaviour, IAgentModule , IMoveable
+    public abstract class AbstractMovementModule : MonoBehaviour, IModule , IMoveable
     {
         [Header("Movement")]
         [field:SerializeField] public Rigidbody2D RbCompo { get; private set; }
