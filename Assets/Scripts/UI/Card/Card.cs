@@ -32,6 +32,11 @@ namespace UI.Card
             Rect.localRotation = Quaternion.Euler(0, 0, zRot);
         }
 
+        public ICardDataProvider[] GetData()
+        {
+            return GetComponentsInChildren<ICardDataProvider>();
+        }
+
         # region Drag
         
         public void OnBeginDrag(PointerEventData eventData) // Start

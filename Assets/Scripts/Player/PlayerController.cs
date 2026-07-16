@@ -1,21 +1,23 @@
 using Agent;
 using Interface;
 using Module;
-using UnityEngine;
-using Utility;
+using RunTimeData;
+using UI.Card;
 
 namespace Player
 {
     public class PlayerController : AbstractAgent , ICardDropTarget
     {
-        private InputModule _input;
         private PlayerMovementModule _mover;
+        private InputModule _input;
+        private DataLister _dataLister;
 
         protected override void Awake()
         {
             base.Awake();
-            _input = GetModule<InputModule>();
             _mover = GetModule<PlayerMovementModule>();
+            _input = GetModule<InputModule>();
+            _dataLister = GetModule<DataLister>();
             
             foreach (IInitType init in GetComponentsInChildren<IInitType>())
                 init.Init(this);
@@ -35,12 +37,19 @@ namespace Player
 
         public bool CanReceive(ICard card)
         {
-            return true; //Test
+            throw new System.NotImplementedException();
         }
 
         public void ReceiveCard(ICard card)
         {
-            Debug.Log($"I ReceiveCard form {card}");
+            foreach (ICardDataProvider cardDataProvider in card.GetData())
+            {
+                if (_dataLister.TryGetRuntimeStat(cardDataProvider.CardData.statType, out RunTimeStat runtimeStat))
+                {
+                    runtimeStat.Add(cardDataProvider.CardData.statAddValue);
+                    runtimeStat.Multiply(cardDataProvider.CardData.statMultiValue);
+                }
+            }
         }
     }
 }

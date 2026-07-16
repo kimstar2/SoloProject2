@@ -1,3 +1,5 @@
+using UI.Card;
+
 namespace Interface
 {
     public interface ICardDropTarget

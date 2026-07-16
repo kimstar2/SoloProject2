@@ -2904,7 +2904,7 @@ GameObject:
   - component: {fileID: 1402030074}
   - component: {fileID: 1402030075}
   m_Layer: 0
-  m_Name: CardDataLister
+  m_Name: CardData
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2937,7 +2937,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b66a64465f3e45aaa44fa7b5e6440db3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.Card.CardDataLister
-  <CardData>k__BackingField: {fileID: 0}
+  <CardData>k__BackingField: {fileID: 11400000, guid: 30dc76aa0028c29428f83001f5cd11aa, type: 2}
 --- !u!1 &1423762548
 GameObject:
   m_ObjectHideFlags: 0

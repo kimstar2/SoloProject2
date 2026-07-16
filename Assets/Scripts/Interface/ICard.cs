@@ -5,6 +5,6 @@ namespace Interface
     public interface ICard
     {
         void SetLayout(Vector2 pos , float zRot);
-        
+        ICardDataProvider[] GetData();
     }
 }
