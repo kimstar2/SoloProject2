@@ -1,23 +1,25 @@
-    using System.Collections.Generic;
+using System.Collections.Generic;
 using Enum;
 using Interface;
+using Interface.Marker;
 using RunTimeData;
 using SO;
 using UnityEngine;
 
 namespace Module
 {
-    public class DataLister : MonoBehaviour, IModule, IDataLister
+    public class StatDataLister : MonoBehaviour, IModule
     {
-        public readonly List<IStatDataProvider> OriginDataList = new();
+        private readonly List<IStatDataProvider> _originDataList  = new();
+        public IReadOnlyList<IStatDataProvider> DataList => _originDataList; 
 
         private readonly Dictionary<StatType, RunTimeStat> _runtimeStatMap = new();
 
         private void Awake()
         {
-            OriginDataList.AddRange(GetComponentsInChildren<IStatDataProvider>());
+            _originDataList.AddRange(GetComponentsInChildren<IStatDataProvider>());
 
-            foreach (IStatDataProvider provider in OriginDataList)
+            foreach (IStatDataProvider provider in DataList)
             {
                 StatDataSo originData = provider.StatData;
                 if (originData == null)

@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 53bc7122595046f7a1c92235dac4b3d0, type: 3}
-  m_Name: TCard data
+  m_Name: TCard data 1
   m_EditorClassIdentifier: Assembly-CSharp::SO.CardDataSo
   statType: 0
-  statAddValue: 25
-  statMultiValue: 1
+  statAddValue: 0
+  statMultiValue: 2

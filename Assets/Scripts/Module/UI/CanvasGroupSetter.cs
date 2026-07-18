@@ -1,8 +1,8 @@
-using System;
 using Interface;
+using Interface.Marker;
 using UnityEngine;
 
-namespace UI
+namespace Module.UI
 {
     public class CanvasGroupSetter : MonoBehaviour , IModule
     {

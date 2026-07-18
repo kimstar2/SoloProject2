@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using DG.Tweening;
 using SO;
 using Struct;
@@ -38,20 +37,28 @@ namespace UI
 
         private void GoAction(TransformAction crt)
         {
-            DOTween.Kill(_id);
+            KillTween();
             Vector3 scaleTarget = crt.GetScaleTarget(Rect.localScale);
             Vector3 rotationTarget = crt.GetRotationTarget(Rect.localEulerAngles);
-
-            Rect.DOScale(scaleTarget, crt.scaleDur)
-                .SetEase(crt.scaleEase)
-                .SetLink(gameObject, LinkBehaviour.KillOnDisable)
-                .SetId(_id);
-
-            Rect.DOLocalRotate(rotationTarget, crt.rotDur)
-                .SetEase(crt.rotEase)
-                .SetLink(gameObject, LinkBehaviour.KillOnDisable)
-                .SetId(_id);
+            
+            Sequence seq = DOTween.Sequence();
+            seq.Join(Rect.DOScale(scaleTarget, crt.scaleDur).SetEase(crt.scaleEase).SetId(_id+1));
+            seq.Join(Rect.DOLocalRotate(rotationTarget, crt.rotDur).SetEase(crt.rotEase).SetId(_id+2));
+            seq.SetLink(gameObject, LinkBehaviour.KillOnDisable).SetId(_id);
         }
+
+        public void KillTween(bool scale = true, bool rotate = true)
+        {
+            if (scale && rotate)
+            {
+                DOTween.Kill(_id);
+            }
+            else if (scale)
+                DOTween.Kill(_id+1);
+            else if (rotate)
+                DOTween.Kill(_id+2);
+        }
+
 
 #if UNITY_EDITOR
         private void OnValidate()

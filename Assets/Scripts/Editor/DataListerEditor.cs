@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Editor
 {
-    [CustomEditor(typeof(DataLister))]
+    [CustomEditor(typeof(StatDataLister))]
     public class DataListerEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
@@ -24,11 +24,11 @@ namespace Editor
 
         private void CreateProvider<T>(string providerName) where T : Component
         {
-            DataLister dataLister = (DataLister)target;
+            StatDataLister statDataLister = (StatDataLister)target;
             GameObject providerObject = new GameObject(providerName);
 
             Undo.RegisterCreatedObjectUndo(providerObject, $"Create {providerName}");
-            providerObject.transform.SetParent(dataLister.transform, false);
+            providerObject.transform.SetParent(statDataLister.transform, false);
             providerObject.AddComponent<T>();
 
             Selection.activeGameObject = providerObject;

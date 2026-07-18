@@ -1,11 +1,11 @@
-using System;
 using Interface;
+using Interface.Marker;
 using UnityEngine;
 
 namespace Agent
 {
     [RequireComponent(typeof(Collider2D))]
-    public class AgentTrigger : MonoBehaviour
+    public class AgentTrigger : MonoBehaviour , IModule
     {
         [SerializeField] private Collider2D myCollider;
         [SerializeField] private Color gizmoColor = Color.darkOrange;

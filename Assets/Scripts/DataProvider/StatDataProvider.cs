@@ -27,7 +27,7 @@ namespace DataProvider
                     gameObject.name = "Mana Stat";
                     break;
             }
-            gameObject.name += $"({StatData.statValue})";
+            gameObject.name += $"(default:{StatData.statValue})";
         }
     }
 }

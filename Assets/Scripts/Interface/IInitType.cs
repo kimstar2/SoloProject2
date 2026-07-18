@@ -1,7 +1,9 @@
+using Interface.Marker;
+
 namespace Interface
 {
     public interface IInitType
     {
-        void Init<T>(T type);
+        void Init(IInitializer type);
     }
 }

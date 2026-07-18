@@ -1,26 +1,23 @@
 using Agent;
 using Interface;
+using Interface.Marker;
 using Module;
 using RunTimeData;
-using UI.Card;
 
 namespace Player
 {
-    public class PlayerController : AbstractAgent , ICardDropTarget
+    public class PlayerController : AbstractAgent , ICardDropTarget , IInitializer
     {
         private PlayerMovementModule _mover;
         private InputModule _input;
-        private DataLister _dataLister;
+        private StatDataLister _statDataLister;
 
         protected override void Awake()
         {
             base.Awake();
             _mover = GetModule<PlayerMovementModule>();
             _input = GetModule<InputModule>();
-            _dataLister = GetModule<DataLister>();
-            
-            foreach (IInitType init in GetComponentsInChildren<IInitType>())
-                init.Init(this);
+            _statDataLister = GetModule<StatDataLister>();
         }
 
         private void OnEnable()
@@ -37,19 +34,25 @@ namespace Player
 
         public bool CanReceive(ICard card)
         {
-            throw new System.NotImplementedException();
+            return true;
         }
 
-        public void ReceiveCard(ICard card)
+        public bool ReceiveCard(ICard card)
         {
+            bool applied = false;
             foreach (ICardDataProvider cardDataProvider in card.GetData())
             {
-                if (_dataLister.TryGetRuntimeStat(cardDataProvider.CardData.statType, out RunTimeStat runtimeStat))
-                {
-                    runtimeStat.Add(cardDataProvider.CardData.statAddValue);
-                    runtimeStat.Multiply(cardDataProvider.CardData.statMultiValue);
-                }
+                if (cardDataProvider.CardData == null) continue;
+
+                bool found = _statDataLister.TryGetRuntimeStat(cardDataProvider.CardData.statType, out RunTimeStat runtimeStat);
+                
+                if (!found) continue;
+                
+                runtimeStat.Apply(cardDataProvider.CardData.statAddValue, cardDataProvider.CardData.statMultiValue);
+                applied = true;
             }
+            
+            return applied;
         }
     }
 }

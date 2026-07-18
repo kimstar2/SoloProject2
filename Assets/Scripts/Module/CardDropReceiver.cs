@@ -1,4 +1,5 @@
 using Interface;
+using Interface.Marker;
 using UI.Card;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,9 +18,13 @@ namespace Module
             if (!draggedGo.TryGetComponent(out Card card)) return;
             if (!_target.CanReceive(card)) return;
 
-            _target.ReceiveCard(card);
+            bool success = _target.ReceiveCard(card);
+            
+            if (!success) return;
+            
+            card.MarkDropSucceeded();
         }
 
-        public void Init<T>(T type) => _target = type as ICardDropTarget;
+        public void Init(IInitializer type) => _target = type as ICardDropTarget;
     }
 }
