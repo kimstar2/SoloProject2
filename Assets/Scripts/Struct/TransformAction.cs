@@ -1,13 +1,12 @@
 using System;
 using DG.Tweening;
-using Interface;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Struct
 {
     [Serializable]
-    public struct TransformAction : IForRot , IForScale
+    public struct TransformAction
     {
         [FormerlySerializedAs("<Rotation>k__BackingField")]
         [SerializeField] private Vector3 rotation;

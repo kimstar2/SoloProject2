@@ -33,6 +33,32 @@ namespace Module
                 _runtimeStatMap.Add(originData.statType, runTimeStat);
             }
         }
+        
+        public bool ApplyCard(ICard card)
+        {
+            bool applied = false;
+
+            foreach (ICardDataProvider provider in card.GetData())
+            {
+                CardDataSo data = provider.CardData;
+
+                if (data == null)
+                    continue;
+
+                if (!_runtimeStatMap.TryGetValue(
+                        data.statType,
+                        out RunTimeStat runtimeStat))
+                    continue;
+
+                runtimeStat.Apply(
+                    data.statAddValue,
+                    data.statMultiValue);
+
+                applied = true;
+            }
+
+            return applied;
+        }
 
         public bool TryGetRuntimeStat(StatType statType, out RunTimeStat runtimeStat)
         {

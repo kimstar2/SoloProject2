@@ -12,3 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88af7b738fe045d284b102fc157d7ebd, type: 3}
   m_Name: Player Input
   m_EditorClassIdentifier: Assembly-CSharp::SO.InputSo
+  onInteractKeyPressed: {fileID: 0}
+  onSprintKeyPressed: {fileID: 0}
+  onCrouchKeyPressed: {fileID: 0}
+  onAttackKeyPressed: {fileID: 0}
+  onDashEvent: {fileID: 11400000, guid: 93e0bbc74a4ec2149bcba9d353b501ba, type: 2}
+  onMoveInputChanged: {fileID: 11400000, guid: 5ddcc757d5c0ed548b4a0d5e86fc05ae, type: 2}

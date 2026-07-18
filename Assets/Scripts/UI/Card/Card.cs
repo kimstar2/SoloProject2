@@ -28,7 +28,7 @@ namespace UI.Card
         public event Action OnDragEvent;
         public event Action<bool> OnEndDragEvent;
         public event Action OnDropSuccessEvent;
-        public event Action OnIndexChanged;
+
 
         public void SetLayout(Vector2 pos, float zRot)
         {
@@ -54,7 +54,6 @@ namespace UI.Card
             _layoutSequence.SetLink(
                 gameObject,
                 LinkBehaviour.KillOnDestroy);
-            OnIndexChanged?.Invoke();
         }
 
         public ICardDataProvider[] GetData() => GetComponentsInChildren<ICardDataProvider>();

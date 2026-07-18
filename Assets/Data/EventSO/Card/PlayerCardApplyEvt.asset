@@ -9,9 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 53bc7122595046f7a1c92235dac4b3d0, type: 3}
-  m_Name: TCard data
-  m_EditorClassIdentifier: Assembly-CSharp::SO.CardDataSo
-  statType: 0
-  statAddValue: 0
-  statMultiValue: 2
+  m_Script: {fileID: 11500000, guid: 702036cacf214550901743ee495892aa, type: 3}
+  m_Name: PlayerCardApplyEvt
+  m_EditorClassIdentifier: Assembly-CSharp::SO.Event.CardApplyEventChannel

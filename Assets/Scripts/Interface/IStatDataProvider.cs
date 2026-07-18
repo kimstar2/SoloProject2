@@ -3,7 +3,7 @@ using SO;
 
 namespace Interface
 {
-    public interface IStatDataProvider : IDataProvider
+    public interface IStatDataProvider
     {
         public StatDataSo StatData { get; }
     }

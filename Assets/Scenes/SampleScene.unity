@@ -495,6 +495,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3fe365d45eb04741be7a66d8f5a27ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerController
+  cardApplyChannel: {fileID: 11400000, guid: 507d3321bfcb68e48bfed137f62e3ce3, type: 2}
 --- !u!70 &388727815
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -1469,7 +1470,7 @@ GameObject:
   - component: {fileID: 1059282499}
   - component: {fileID: 1059282500}
   m_Layer: 0
-  m_Name: Defense Stat(10)
+  m_Name: Defense Stat(default:10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1668,7 +1669,7 @@ GameObject:
   - component: {fileID: 1159944968}
   - component: {fileID: 1159944969}
   m_Layer: 0
-  m_Name: Mana Stat(10)
+  m_Name: Mana Stat(default:10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1867,7 +1868,7 @@ GameObject:
   - component: {fileID: 1579593034}
   - component: {fileID: 1579593035}
   m_Layer: 0
-  m_Name: Damage Stat(10)
+  m_Name: Damage Stat(default:10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2133,6 +2134,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.InputModule
   <Input>k__BackingField: {fileID: 11400000, guid: bdb2c5529484a6946b772aeb2dcc4839, type: 2}
+  <OnMovementChannel>k__BackingField: {fileID: 11400000, guid: 5ddcc757d5c0ed548b4a0d5e86fc05ae, type: 2}
+  <OnDashChannel>k__BackingField: {fileID: 11400000, guid: 93e0bbc74a4ec2149bcba9d353b501ba, type: 2}
 --- !u!1 &1825019195
 GameObject:
   m_ObjectHideFlags: 0
@@ -2399,7 +2402,7 @@ GameObject:
   - component: {fileID: 2066341392}
   - component: {fileID: 2066341393}
   m_Layer: 0
-  m_Name: Health Stat(20)
+  m_Name: Health Stat(default:20)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

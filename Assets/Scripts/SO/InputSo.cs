@@ -1,5 +1,6 @@
 using System;
 using Interface;
+using SO.Event;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,12 +15,12 @@ namespace SO
 
         
         # region IPlayerActions
-        public event Action<bool> OnInteractKeyPressed;
-        public event Action<bool> OnSprintKeyPressed;
-        public event Action<bool> OnCrouchKeyPressed;
-        public event Action<bool> OnAttackKeyPressed;
-        public event Action<Vector2> OnMoveInputChanged;
-        public event Action OnDashEvent;
+        public BoolEventChannel onInteractKeyPressed;
+        public BoolEventChannel onSprintKeyPressed;
+        public BoolEventChannel onCrouchKeyPressed;
+        public BoolEventChannel onAttackKeyPressed;
+        public BoolEventChannel onDashEvent;
+        public Vector2EventChannel onMoveInputChanged;
         # endregion IPlayerActions
         
 
@@ -53,46 +54,48 @@ namespace SO
         public void OnMove(InputAction.CallbackContext context)
         {
             MovementInput = context.ReadValue<Vector2>();
-            OnMoveInputChanged?.Invoke(MovementInput);
+            onMoveInputChanged?.RaiseEvent(MovementInput);
         }
 
         public void OnAttack(InputAction.CallbackContext context)
         {
             if (context.performed)
-                OnAttackKeyPressed?.Invoke(true);
+                onAttackKeyPressed?.RaiseEvent(true);
             if (context.canceled)
-                OnAttackKeyPressed?.Invoke(false);
+                onAttackKeyPressed?.RaiseEvent(false);
         }
 
         public void OnInteract(InputAction.CallbackContext context)
         {
             if (context.performed)
-                OnInteractKeyPressed?.Invoke(true);
+                onInteractKeyPressed?.RaiseEvent(true);
             if (context.canceled)
-                OnInteractKeyPressed?.Invoke(false);
+                onInteractKeyPressed?.RaiseEvent(false);
         }
 
         public void OnCrouch(InputAction.CallbackContext context)
         {
             if (context.performed)
-                OnCrouchKeyPressed?.Invoke(true);
+                onCrouchKeyPressed?.RaiseEvent(true);
             if (context.canceled)
-                OnCrouchKeyPressed?.Invoke(false);
+                onCrouchKeyPressed?.RaiseEvent(false);
         }
 
 
         public void OnSprint(InputAction.CallbackContext context)
         {
             if (context.performed)
-                OnSprintKeyPressed?.Invoke(true);
+                onSprintKeyPressed?.RaiseEvent(true);
             if (context.canceled)
-                OnSprintKeyPressed?.Invoke(false);
+                onSprintKeyPressed?.RaiseEvent(false);
         }
         
         public void OnDash(InputAction.CallbackContext context)
         {
             if (context.performed)
-                OnDashEvent?.Invoke();
+                onDashEvent?.RaiseEvent(true);
+            if (context.canceled)
+                onDashEvent?.RaiseEvent(false);
         }
 
         # endregion Actions

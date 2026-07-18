@@ -15,7 +15,6 @@ namespace UI.Card
 
         private readonly List<ICard> _cards = new();
         private bool _isChangingOrder;
-        public event Action OnIndexChanged;
 
         private void Start()
         {

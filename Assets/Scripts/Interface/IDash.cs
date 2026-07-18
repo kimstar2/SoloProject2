@@ -8,6 +8,6 @@ namespace Interface
         DashDataSo OriginDashData { get; }
         bool IsDash { get; }
         
-        void Dash();
+        bool TryDash();
     }
 }

@@ -3,6 +3,8 @@ using Interface;
 using Interface.Marker;
 using Module;
 using RunTimeData;
+using SO.Event;
+using UnityEngine;
 
 namespace Player
 {
@@ -11,10 +13,13 @@ namespace Player
         private PlayerMovementModule _mover;
         private InputModule _input;
         private StatDataLister _statDataLister;
+        
+        [SerializeField] private CardApplyEventChannel cardApplyChannel;
 
         protected override void Awake()
         {
             base.Awake();
+
             _mover = GetModule<PlayerMovementModule>();
             _input = GetModule<InputModule>();
             _statDataLister = GetModule<StatDataLister>();
@@ -22,14 +27,14 @@ namespace Player
 
         private void OnEnable()
         {
-            _input.Input.OnMoveInputChanged += _mover.SetMoveDir;
-            _input.Input.OnDashEvent += _mover.Dash;
+            _input.OnMovementChannel.OnEvent += _mover.SetMoveDir;
+            _input.OnDashChannel.OnEvent += HandleDashInput;
         }
-
+        
         private void OnDisable()
         {
-            _input.Input.OnMoveInputChanged -= _mover.SetMoveDir;
-            _input.Input.OnDashEvent -= _mover.Dash;
+            _input.OnMovementChannel.OnEvent -= _mover.SetMoveDir;
+            _input.OnDashChannel.OnEvent -= HandleDashInput;
         }
 
         public bool CanReceive(ICard card)
@@ -39,20 +44,23 @@ namespace Player
 
         public bool ReceiveCard(ICard card)
         {
-            bool applied = false;
-            foreach (ICardDataProvider cardDataProvider in card.GetData())
-            {
-                if (cardDataProvider.CardData == null) continue;
+            bool applied = _statDataLister.ApplyCard(card);
 
-                bool found = _statDataLister.TryGetRuntimeStat(cardDataProvider.CardData.statType, out RunTimeStat runtimeStat);
-                
-                if (!found) continue;
-                
-                runtimeStat.Apply(cardDataProvider.CardData.statAddValue, cardDataProvider.CardData.statMultiValue);
-                applied = true;
-            }
-            
-            return applied;
+            if (!applied)
+                return false;
+
+            cardApplyChannel?.RaiseEvent(gameObject, card);
+
+            return true;
+        }
+        
+        private void HandleDashInput(bool pressed)
+        {
+            if (!pressed) return;
+
+            bool succeeded = _mover.TryDash();
+
+            if (!succeeded) return;
         }
     }
 }

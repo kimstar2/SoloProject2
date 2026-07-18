@@ -63,12 +63,14 @@ namespace Player
 
         # region Dash
 
-        public void Dash() // 대쉬 입력
+        public bool TryDash()
         {
             if (!_canDash || DashData == null)
-                return;
+                return false;
+
             DashLogic();
             DashCooldown(destroyCancellationToken).Forget();
+            return true;
         }
 
         private void DashLogic() // 대쉬 구현

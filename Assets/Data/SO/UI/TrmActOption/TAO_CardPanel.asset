@@ -17,26 +17,26 @@ MonoBehaviour:
     addRotationX: 0
     addRotationY: 0
     addRotationZ: 1
-    rotDur: 0.5
-    rotEase: 24
+    rotDur: 0.25
+    rotEase: 15
     scale: {x: 1.1, y: 1.1, z: 1.1}
     addScaleX: 0
     addScaleY: 0
     addScaleZ: 0
-    scaleDur: 0.5
-    scaleEase: 24
+    scaleDur: 0.25
+    scaleEase: 12
   - rotation: {x: 0, y: 0, z: 0}
     addRotationX: 0
     addRotationY: 0
     addRotationZ: 1
-    rotDur: 0.5
-    rotEase: 24
+    rotDur: 0.25
+    rotEase: 12
     scale: {x: 1.1, y: 1.1, z: 1.1}
     addScaleX: 0
     addScaleY: 0
     addScaleZ: 0
-    scaleDur: 0.5
-    scaleEase: 24
+    scaleDur: 0.25
+    scaleEase: 15
   onEvent:
     m_PersistentCalls:
       m_Calls: []
