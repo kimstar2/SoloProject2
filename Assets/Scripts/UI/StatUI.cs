@@ -9,7 +9,8 @@ namespace UI
     {
         private TextMeshProUGUI _statText;
         private StatType _myStat;
-        public void Awake()
+
+        private void Awake()
         {
             _statText = GetComponent<TextMeshProUGUI>();
         }
@@ -18,7 +19,7 @@ namespace UI
         
         public void SetText(float prev, float next)
         {
-            _statText.SetText($"{_myStat} : {next}");
+            _statText.SetText($"{_myStat} : {next:0.##}");
         }
     }
 }

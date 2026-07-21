@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using Interface;
 using Interface.Marker;
 using UnityEngine;
 
@@ -9,19 +6,26 @@ namespace Module
 {
     public class ModuleCompo : MonoBehaviour
     {
-        private Dictionary<Type, IModule> _moduleDict;
+        private IModule[] _modules;
 
         protected virtual void Awake()
         {
-            _moduleDict = GetComponentsInChildren<IModule>()
-                .GroupBy(module => module
-                    .GetType())
-                .ToDictionary(g => g.Key, g => g.First());
+            _modules = GetComponentsInChildren<IModule>(true);
         }
 
         protected T GetModule<T>() where T : class, IModule
         {
-            return _moduleDict.Values.OfType<T>().FirstOrDefault();
+            return _modules.OfType<T>().FirstOrDefault();
+        }
+
+        protected T GetRequiredModule<T>() where T : class, IModule
+        {
+            T module = GetModule<T>();
+
+            if (module == null)
+                Debug.LogError($"Required module {typeof(T).Name} was not found under {name}.", this);
+
+            return module;
         }
     }
 }

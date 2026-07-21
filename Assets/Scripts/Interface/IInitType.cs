@@ -1,9 +1,9 @@
-using Interface.Marker;
+using UnityEngine;
 
 namespace Interface
 {
-    public interface IInitType
+    public interface IInitType<in T> where T : Component 
     {
-        void Init(IInitializer type);
+        public void Init(T target);
     }
 }

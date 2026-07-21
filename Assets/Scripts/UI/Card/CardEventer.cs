@@ -1,36 +1,33 @@
+using Interface;
 using Module;
 using Module.UI;
+using UnityEngine;
 
 namespace UI.Card
 {
-    public class CardEventer : ModuleCompo
+    public class CardEventer : ModuleCompo, IEventer
     {
+        private Card _myCard;
+        private CardDrag _cardDrag;
+        private CardGroup _myCardGroup;
+
         private CanvasGroupSetter _canvasGroupSetter;
         private TweenSequence _sequence;
-        private CardGroup _myCardGroup;
-        
-        private Card _myCard;
+        private bool _eventsEnabled;
 
         protected override void Awake()
         {
             base.Awake();
             _myCard = GetComponentInParent<Card>();
+            _cardDrag = GetComponentInParent<CardDrag>();
             _myCardGroup = GetComponentInParent<CardGroup>();
-        }
 
-        private void Start()
-        {
-            _canvasGroupSetter = GetModule<CanvasGroupSetter>();
-            _sequence = GetModule<TweenSequence>();
-            
-            _myCard.OnBeginDragEvent += HandleBeginDrag;
-            _myCard.OnDragEvent += HandlerDrag;
-            _myCard.OnEndDragEvent += HandleEndDrag;
-            _myCard.OnDropSuccessEvent += HandleDropSuccess;
-            
-            _sequence.OnCompleted += HandleCompletedSeq;
-        }
+            _canvasGroupSetter = GetRequiredModule<CanvasGroupSetter>();
+            _sequence = GetRequiredModule<TweenSequence>();
 
+            if (_myCard == null || _cardDrag == null || _myCardGroup == null)
+                Debug.LogError("CardEventer must be placed under a Card inside a CardGroup.", this);
+        }
 
         # region Handler
 
@@ -42,34 +39,59 @@ namespace UI.Card
 
         private void HandlerDrag()
         {
+            _myCard.KillSeq();
             _myCardGroup.UpdateCardOrder(_myCard);
         }
 
         private void HandleDropSuccess()
         {
-            _sequence.Play();
+            _myCardGroup.NotifyDeckChanged();
+
             _canvasGroupSetter.SetCanvasBlock(false);
+
+            if (!_sequence.Play())
+                HandleCompletedSeq();
         }
 
         private void HandleEndDrag(bool succeeded)
         {
+            _myCard.KillSeq();
             if (succeeded) return;
             _canvasGroupSetter.SetCanvasBlock(true);
             _myCardGroup.CardSet();
         }
-        
+
         private void HandleCompletedSeq() => Destroy(_myCard.gameObject);
-        
+
         #endregion Handler
 
-        private void OnDestroy()
+        private void OnEnable() => EnableEvent();
+        private void OnDisable() => DisableEvent();
+
+        public void EnableEvent()
         {
-            _myCard.OnBeginDragEvent -= HandleBeginDrag;
-            _myCard.OnDragEvent -= HandlerDrag;
-            _myCard.OnEndDragEvent -= HandleEndDrag;
-            _myCard.OnDropSuccessEvent -= HandleDropSuccess;
-            
+            if (_eventsEnabled || _cardDrag == null || _sequence == null) return;
+
+            _cardDrag.OnBeginDragEvent += HandleBeginDrag;
+            _cardDrag.OnDragEvent += HandlerDrag;
+            _cardDrag.OnEndDragEvent += HandleEndDrag;
+            _cardDrag.OnDropSuccessEvent += HandleDropSuccess;
+
+            _sequence.OnCompleted += HandleCompletedSeq;
+            _eventsEnabled = true;
+        }
+
+        public void DisableEvent()
+        {
+            if (!_eventsEnabled || _cardDrag == null || _sequence == null) return;
+
+            _cardDrag.OnBeginDragEvent -= HandleBeginDrag;
+            _cardDrag.OnDragEvent -= HandlerDrag;
+            _cardDrag.OnEndDragEvent -= HandleEndDrag;
+            _cardDrag.OnDropSuccessEvent -= HandleDropSuccess;
+
             _sequence.OnCompleted -= HandleCompletedSeq;
+            _eventsEnabled = false;
         }
     }
 }   

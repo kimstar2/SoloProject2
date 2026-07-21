@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Enum;
-using Interface;
-using Module;
+using Player;
 using RunTimeData;
 using UI;
 using UnityEngine;
@@ -10,44 +9,82 @@ namespace DataProvider
 {
     public class StatUIProvider : MonoBehaviour
     {
-        [SerializeField] private StatDataLister statDataLister;
-        private readonly Dictionary<StatType , StatUI> _statUIDict = new();
+        [SerializeField] private PlayerStatDataLister playerStatDataLister;
+
+        private readonly Dictionary<StatType, StatBinding> _bindings = new();
+        private bool _initialized;
 
         private void Start()
         {
-            foreach (IStatDataProvider provider in statDataLister.DataList)
+            if (playerStatDataLister == null)
             {
-                if (statDataLister.TryGetRuntimeStat(provider.StatData.statType, out RunTimeStat stat))
-                {
-                    StatUI myStat = MakeText();
-                    _statUIDict.Add(provider.StatData.statType, myStat);
-                    
-                    myStat.SetType(provider.StatData.statType);
-                    stat.Value.OnValueChanged += myStat.SetText;
-                    myStat.SetText(0,stat.Value.Value);
-                }
+                Debug.LogError("PlayerStatDataLister is not assigned.", this);
+                enabled = false;
+                return;
+            }
+
+            BuildBindings();
+            Subscribe();
+            _initialized = true;
+        }
+
+        private void OnEnable()
+        {
+            if (_initialized)
+                Subscribe();
+        }
+
+        private void OnDisable()
+        {
+            if (_initialized)
+                Unsubscribe();
+        }
+
+        private void BuildBindings()
+        {
+            foreach (var provider in playerStatDataLister.DataList)
+            {
+                if (provider.StatData == null) continue;
+                if (!playerStatDataLister.TryGetRuntimeStat(provider.StatData.statType, out RunTimeStat stat))
+                    continue;
+
+                StatUI view = CreateStatView();
+                view.SetType(provider.StatData.statType);
+                view.SetText(stat.Value.Value, stat.Value.Value);
+
+                _bindings.TryAdd(provider.StatData.statType, new StatBinding(stat, view));
             }
         }
 
-        private StatUI MakeText()
+        private StatUI CreateStatView()
         {
-            GameObject textObject = new GameObject();
+            GameObject textObject = new("Stat Text");
             textObject.transform.SetParent(transform, false);
             return textObject.AddComponent<StatUI>();
         }
 
-        private void OnDestroy()
+        private void Subscribe()
         {
-            foreach (IStatDataProvider provider in statDataLister.DataList)
+            foreach (StatBinding binding in _bindings.Values)
+                binding.Stat.Value.OnValueChanged += binding.View.SetText;
+        }
+
+        private void Unsubscribe()
+        {
+            foreach (StatBinding binding in _bindings.Values)
+                binding.Stat.Value.OnValueChanged -= binding.View.SetText;
+        }
+
+        private readonly struct StatBinding
+        {
+            public RunTimeStat Stat { get; }
+            public StatUI View { get; }
+
+            public StatBinding(RunTimeStat stat, StatUI view)
             {
-                if (statDataLister.TryGetRuntimeStat(provider.StatData.statType, out RunTimeStat stat))
-                {
-                    _statUIDict.TryGetValue(provider.StatData.statType, out StatUI myStat);
-                    if (myStat != null)
-                        stat.Value.OnValueChanged -= myStat.SetText;
-                }
+                Stat = stat;
+                View = view;
             }
-            _statUIDict.Clear();
         }
     }
 }

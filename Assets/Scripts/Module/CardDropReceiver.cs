@@ -1,30 +1,37 @@
 using Interface;
 using Interface.Marker;
-using UI.Card;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Module
 {
-    public class CardDropReceiver : MonoBehaviour , IDropHandler , IInitType , IModule
+    public class CardDropReceiver : MonoBehaviour , IDropHandler , IModule
     {
         private ICardDropTarget _target;
 
+        private void Awake()
+        {
+            _target = GetComponent<ICardDropTarget>();
+
+            if (_target == null)
+                Debug.LogError("CardDropReceiver requires an ICardDropTarget on the same object.", this);
+        }
+        
         public void OnDrop(PointerEventData eventData)
         {
             GameObject draggedGo = eventData.pointerDrag;
 
-            if (draggedGo == null) return;
-            if (!draggedGo.TryGetComponent(out Card card)) return;
+            if (draggedGo == null) return;  
+            if (!draggedGo.TryGetComponent(out ICard card)) return;
+            if (!draggedGo.TryGetComponent(out IDraggable draggable)) return;
+
+            if (_target == null) return;
             if (!_target.CanReceive(card)) return;
 
-            bool success = _target.ReceiveCard(card);
-            
-            if (!success) return;
-            
-            card.MarkDropSucceeded();
-        }
+            draggable.MarkDropSucceeded();
 
-        public void Init(IInitializer type) => _target = type as ICardDropTarget;
+            if (!_target.ReceiveCard(card))
+                draggable.MarkDropFailed();
+        }
     }
 }

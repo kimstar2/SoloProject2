@@ -2,7 +2,6 @@ using System;
 using DG.Tweening;
 using Interface.Marker;
 using SO;
-using SO.Event;
 using Struct;
 using UnityEngine;
 
@@ -46,9 +45,15 @@ namespace Module
                 targetGo.GetComponent<CanvasGroup>();
         }
 
-        public void Play()
+        public bool Play()
         {
             Kill();
+
+            if (stepSo == null || stepSo.steps == null || stepSo.steps.Count == 0)
+            {
+                Debug.LogWarning("TweenSequence has no configured steps.", this);
+                return false;
+            }
 
             _activeSequence = DOTween.Sequence();
             _activeSequence
@@ -83,7 +88,7 @@ namespace Module
             {
                 _activeSequence.Kill();
                 _activeSequence = null;
-                return;
+                return false;
             }
 
             _activeSequence
@@ -91,6 +96,8 @@ namespace Module
                     targetGo,
                     LinkBehaviour.KillOnDestroy)
                 .OnComplete(HandleComplete);
+
+            return true;
         }
 
         private Tween CreateTween(

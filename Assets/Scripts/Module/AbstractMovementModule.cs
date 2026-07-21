@@ -1,11 +1,10 @@
 using Interface;
-using Interface.Marker;
 using SO;
 using UnityEngine;
 
 namespace Module
 {
-    public abstract class AbstractMovementModule : MonoBehaviour, IModule , IMoveable
+    public abstract class AbstractMovementModule : MonoBehaviour , IMoveable
     {
         [Header("Movement")]
         [field:SerializeField] public Rigidbody2D RbCompo { get; private set; }

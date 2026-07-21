@@ -11,7 +11,9 @@ namespace Agent
         [SerializeField] private Color gizmoColor = Color.darkOrange;
         public bool CanTrigger { get; private set; } = true;
 
-        #region MyRegion
+        public void SetCanTrigger(bool canTrigger) => CanTrigger = canTrigger;
+
+        #region Trigger
 
         private void OnTriggerEnter2D(Collider2D other)
         {
@@ -40,16 +42,12 @@ namespace Agent
 
         private void OnDrawGizmosSelected()
         {
+            if (myCollider == null)
+                myCollider = GetComponent<Collider2D>();
+            if (myCollider == null) return;
+
             Gizmos.color = gizmoColor;
-            switch (myCollider)
-            {
-                case BoxCollider2D:
-                    Gizmos.DrawCube(transform.position, transform.localScale);
-                    break;
-                case CircleCollider2D:
-                    Gizmos.DrawSphere(transform.position, transform.localScale.x);
-                    break;
-            }
+            Gizmos.DrawWireCube(myCollider.bounds.center, myCollider.bounds.size);
         }
 #endif
     }

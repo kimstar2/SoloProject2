@@ -1,12 +1,18 @@
-using System;
 using System.Collections.Generic;
 using Interface;
+using SO.Event;
 using UnityEngine;
+using UnityEngine.Serialization;
+using Utility;
 
 namespace UI.Card
 {
     public class CardGroup : ForRect
     {
+        [field: SerializeField]
+        [field: FormerlySerializedAs("deckChangedChannel")]
+        public EventChannel DeckChangedChannel { get; private set; }
+        
         [Header("Card Layout")]
         [SerializeField] private float maxHorizontalSpacing = 120f;
         [SerializeField] private float maxRotationPerCard = 8f;
@@ -18,9 +24,15 @@ namespace UI.Card
 
         private void Start()
         {
-            CardSet();
+            NotifyDeckChanged();
         }
 
+        public void NotifyDeckChanged()
+        {
+            CardSet();
+            DeckChangedChannel?.RaiseEvent();
+        }
+        
         public void CardSet(bool includeDragging = true)
         {
             RefreshCards(includeDragging);
@@ -38,7 +50,7 @@ namespace UI.Card
                 if (!card.IsInDeck)
                     continue;
 
-                if (!includeDragging && card is IDraggable { IsDragging: true })
+                if (!includeDragging && card.IsDragging)
                     continue;
 
                 _cards.Add(card);
@@ -72,12 +84,13 @@ namespace UI.Card
 
             if (currentIndex < 0) return;
             RectTransform draggedRect = draggedCard.transform as RectTransform;
-
             if (draggedRect == null) return;
-            if (draggedRect.anchoredPosition.y > Rect.rect.yMax)
+
+            if (!Rect.rect.Contains(draggedRect.anchoredPosition))
                 CardSet(false);
             else
                 CardSet();
+
             RefreshCards(true);
             
             float spacing = CalculateHorizontalSpacing();
@@ -94,22 +107,21 @@ namespace UI.Card
             _isChangingOrder = true;
             
             draggedCard.transform.SetSiblingIndex(targetSiblingIndex);
-            
             _isChangingOrder = false;
+
+            CardSet();
         }
 
         private float CalculateHorizontalSpacing()
         {
             if (_cards.Count <= 1) return 0f;
 
-            RectTransform groupRect = transform as RectTransform;
             Component firstCard = _cards[0] as Component;
-            
             RectTransform cardRect = firstCard != null ? firstCard.transform as RectTransform : null;
-            
-            if (groupRect == null || cardRect == null) return maxHorizontalSpacing;
-            
-            float availableCenterWidth = Mathf.Max(0f, groupRect.rect.width - cardRect.rect.width);
+
+            if (cardRect == null) return maxHorizontalSpacing;
+
+            float availableCenterWidth = Mathf.Max(0f, Rect.rect.width - cardRect.rect.width);
             float fittedSpacing = availableCenterWidth / (_cards.Count - 1);
             
             return Mathf.Min(maxHorizontalSpacing, fittedSpacing);
@@ -125,7 +137,8 @@ namespace UI.Card
         private void OnTransformChildrenChanged()
         {
             if (_isChangingOrder) return;
-            CardSet();
+            
+            NotifyDeckChanged();
         }
     }
 }

@@ -10,47 +10,31 @@ namespace Editor
     {
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-
+            DrawDefaultInspector();
             EditorGUILayout.Space();
 
-            if (GUILayout.Button("Create Stat Data"))
-            {
-                CreateStatData();
-            }
+            if (GUILayout.Button("Create and Assign Stat Data"))
+                CreateAndAssignStatData();
         }
 
-        private void CreateStatData()
+        private void CreateAndAssignStatData()
         {
             string path = EditorUtility.SaveFilePanelInProject(
                 "Create Stat Data",
                 "Stat data",
                 "asset",
-                "스탯 데이터를 저장할 위치를 선택하세요.");
+                "Choose where to save the stat data asset.");
 
-            if (string.IsNullOrEmpty(path))
-                return;
+            if (string.IsNullOrEmpty(path)) return;
 
-            StatDataSo statData =
-                CreateInstance<StatDataSo>();
-
+            StatDataSo statData = CreateInstance<StatDataSo>();
             AssetDatabase.CreateAsset(statData, path);
-            AssetDatabase.SaveAssets();
 
             serializedObject.Update();
-
-            SerializedProperty listProperty =
-                serializedObject.FindProperty("_statDataSos");
-
-            int newIndex = listProperty.arraySize;
-            listProperty.InsertArrayElementAtIndex(newIndex);
-
-            listProperty
-                .GetArrayElementAtIndex(newIndex)
-                .objectReferenceValue = statData;
-
+            serializedObject.FindProperty("statData").objectReferenceValue = statData;
             serializedObject.ApplyModifiedProperties();
 
+            AssetDatabase.SaveAssets();
             EditorGUIUtility.PingObject(statData);
             Selection.activeObject = statData;
         }

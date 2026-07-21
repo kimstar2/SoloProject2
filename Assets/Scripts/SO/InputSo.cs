@@ -1,8 +1,7 @@
-using System;
-using Interface;
 using SO.Event;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace SO
 {
@@ -15,12 +14,20 @@ namespace SO
 
         
         # region IPlayerActions
-        public BoolEventChannel onInteractKeyPressed;
-        public BoolEventChannel onSprintKeyPressed;
-        public BoolEventChannel onCrouchKeyPressed;
-        public BoolEventChannel onAttackKeyPressed;
-        public BoolEventChannel onDashEvent;
-        public Vector2EventChannel onMoveInputChanged;
+        [field: SerializeField, FormerlySerializedAs("onInteractKeyPressed")]
+        public BoolEventChannel OnInteractKeyPressed { get; private set; }
+        [field: SerializeField, FormerlySerializedAs("onSprintKeyPressed")]
+        public BoolEventChannel OnSprintKeyPressed { get; private set; }
+        [field: SerializeField, FormerlySerializedAs("onCrouchKeyPressed")]
+        public BoolEventChannel OnCrouchKeyPressed { get; private set; }
+        [field: SerializeField, FormerlySerializedAs("onAttackKeyPressed")]
+        public BoolEventChannel OnAttackKeyPressed { get; private set; }
+        [field: SerializeField, FormerlySerializedAs("onDashKeyPressed")]
+        public BoolEventChannel OnDashKeyPressed { get; private set; }
+        [field: SerializeField, FormerlySerializedAs("onMoveInputChanged")]
+        public Vector2EventChannel OnMoveInputChanged { get; private set; }
+        [field: SerializeField, FormerlySerializedAs("onPointerPosChanged")]
+        public Vector2EventChannel OnPointerPosChanged { get; private set; }
         # endregion IPlayerActions
         
 
@@ -35,6 +42,9 @@ namespace SO
             }
 
             _controls.Enable();
+
+            if (Mouse.current != null)
+                PointerInput = Mouse.current.position.ReadValue();
         }
 
         private void OnDisable() => _controls?.Disable();
@@ -43,59 +53,64 @@ namespace SO
         
         
         # region ReadValue
+
+        public void OnPointer(InputAction.CallbackContext context)
+        {
+            PointerInput = context.ReadValue<Vector2>();
+            OnPointerPosChanged?.RaiseEvent(PointerInput);
+        }
         
-        public void OnLook(InputAction.CallbackContext context) => PointerInput = context.ReadValue<Vector2>();
+        public void OnMove(InputAction.CallbackContext context)
+        {
+            MovementInput = context.ReadValue<Vector2>();
+            OnMoveInputChanged?.RaiseEvent(MovementInput);
+            
+        }
 
         # endregion ReadValue
         
         
         # region Actions
 
-        public void OnMove(InputAction.CallbackContext context)
-        {
-            MovementInput = context.ReadValue<Vector2>();
-            onMoveInputChanged?.RaiseEvent(MovementInput);
-        }
-
         public void OnAttack(InputAction.CallbackContext context)
         {
             if (context.performed)
-                onAttackKeyPressed?.RaiseEvent(true);
+                OnAttackKeyPressed?.RaiseEvent(true);
             if (context.canceled)
-                onAttackKeyPressed?.RaiseEvent(false);
+                OnAttackKeyPressed?.RaiseEvent(false);
         }
 
         public void OnInteract(InputAction.CallbackContext context)
         {
             if (context.performed)
-                onInteractKeyPressed?.RaiseEvent(true);
+                OnInteractKeyPressed?.RaiseEvent(true);
             if (context.canceled)
-                onInteractKeyPressed?.RaiseEvent(false);
+                OnInteractKeyPressed?.RaiseEvent(false);
         }
 
         public void OnCrouch(InputAction.CallbackContext context)
         {
             if (context.performed)
-                onCrouchKeyPressed?.RaiseEvent(true);
+                OnCrouchKeyPressed?.RaiseEvent(true);
             if (context.canceled)
-                onCrouchKeyPressed?.RaiseEvent(false);
+                OnCrouchKeyPressed?.RaiseEvent(false);
         }
 
 
         public void OnSprint(InputAction.CallbackContext context)
         {
             if (context.performed)
-                onSprintKeyPressed?.RaiseEvent(true);
+                OnSprintKeyPressed?.RaiseEvent(true);
             if (context.canceled)
-                onSprintKeyPressed?.RaiseEvent(false);
+                OnSprintKeyPressed?.RaiseEvent(false);
         }
         
         public void OnDash(InputAction.CallbackContext context)
         {
             if (context.performed)
-                onDashEvent?.RaiseEvent(true);
+                OnDashKeyPressed?.RaiseEvent(true);
             if (context.canceled)
-                onDashEvent?.RaiseEvent(false);
+                OnDashKeyPressed?.RaiseEvent(false);
         }
 
         # endregion Actions

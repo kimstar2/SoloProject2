@@ -1,17 +1,14 @@
-using System;
 using Interface;
 using UnityEngine;
 
 namespace SO.Event
 {
     [CreateAssetMenu(menuName = "SO/Events/Card Apply Event Channel")]
-    public class CardApplyEventChannel : ScriptableObject
+    public class CardApplyEventChannel : AbstractEventSo<(GameObject target, ICard card)>
     {
-        public event Action<GameObject, ICard> OnEventRaised;
-
         public void RaiseEvent(GameObject target, ICard card)
         {
-            OnEventRaised?.Invoke(target, card);
+            base.RaiseEvent((target, card));
         }
     }
 }

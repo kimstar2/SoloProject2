@@ -1,9 +1,10 @@
+using Interface.Marker;
 using SO;
 using UnityEngine;
 
 namespace Interface
 {
-    public interface IMoveable
+    public interface IMoveable : IModule
     {
         MovementDataSo MovementData { get; }
         Rigidbody2D RbCompo { get;}

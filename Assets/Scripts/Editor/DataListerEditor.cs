@@ -1,11 +1,11 @@
 using DataProvider;
-using Module;
+using Player;
 using UnityEditor;
 using UnityEngine;
 
 namespace Editor
 {
-    [CustomEditor(typeof(StatDataLister))]
+    [CustomEditor(typeof(PlayerStatDataLister))]
     public class DataListerEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
@@ -15,20 +15,17 @@ namespace Editor
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Provider Creation", EditorStyles.boldLabel);
 
-            if (GUILayout.Button("Create CardProvider"))
-                CreateProvider<CardDataProvider>("CardDataProvider");
-
-            if (GUILayout.Button("Create StatProvider"))
-                CreateProvider<StatDataProvider>("StatDataProvider");
+            if (GUILayout.Button("Create Stat Provider"))
+                CreateProvider<StatDataProvider>("Stat Provider");
         }
 
         private void CreateProvider<T>(string providerName) where T : Component
         {
-            StatDataLister statDataLister = (StatDataLister)target;
+            PlayerStatDataLister playerStatDataLister = (PlayerStatDataLister)target;
             GameObject providerObject = new GameObject(providerName);
 
             Undo.RegisterCreatedObjectUndo(providerObject, $"Create {providerName}");
-            providerObject.transform.SetParent(statDataLister.transform, false);
+            providerObject.transform.SetParent(playerStatDataLister.transform, false);
             providerObject.AddComponent<T>();
 
             Selection.activeGameObject = providerObject;

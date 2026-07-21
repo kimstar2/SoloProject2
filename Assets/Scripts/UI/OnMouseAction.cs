@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using DG.Tweening;
 using SO;
 using Struct;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Utility;
 using Random = UnityEngine.Random;
 
 namespace UI
@@ -10,61 +12,72 @@ namespace UI
     public class OnMouseAction : ForRect, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private TransformActionOptionSo option;
-        private string _id;
 
-        public void OnPointerEnter(PointerEventData eventData) => OnEnterAction();
-        public void OnPointerExit(PointerEventData eventData) => OnExitAction();
+        private string _tweenId;
 
         protected override void Awake()
         {
             base.Awake();
-            _id = GetType().Name + transform.GetInstanceID();
+            _tweenId = $"{GetType().Name}_{GetInstanceID()}";
         }
 
-        private void OnEnterAction()
+        public void OnPointerEnter(PointerEventData eventData)
         {
-            int r = Random.Range(0, option.onActions.Count);
-            TransformAction crt = option.onActions[r];
-            GoAction(crt);
+            if (!TryGetRandomAction(option?.onActions, out TransformAction action)) return;
+
+            Play(action);
+            option.onEvent?.Invoke();
         }
 
-        private void OnExitAction()
+        public void OnPointerExit(PointerEventData eventData)
         {
-            int r = Random.Range(0, option.offActions.Count);
-            TransformAction crt = option.offActions[r];
-            GoAction(crt);
+            if (!TryGetRandomAction(option?.offActions, out TransformAction action)) return;
+
+            Play(action);
+            option.offEvent?.Invoke();
         }
 
-        private void GoAction(TransformAction crt)
+        private void Play(TransformAction action)
         {
             KillTween();
-            Vector3 scaleTarget = crt.GetScaleTarget(Rect.localScale);
-            Vector3 rotationTarget = crt.GetRotationTarget(Rect.localEulerAngles);
-            
-            Sequence seq = DOTween.Sequence();
-            seq.Join(Rect.DOScale(scaleTarget, crt.scaleDur).SetEase(crt.scaleEase).SetId(_id+1));
-            seq.Join(Rect.DOLocalRotate(rotationTarget, crt.rotDur).SetEase(crt.rotEase).SetId(_id+2));
-            seq.SetLink(gameObject, LinkBehaviour.KillOnDisable).SetId(_id);
+
+            Vector3 scaleTarget = action.GetScaleTarget(Rect.localScale);
+            Vector3 rotationTarget = action.GetRotationTarget(Rect.localEulerAngles);
+
+            Sequence sequence = DOTween.Sequence()
+                .SetId(_tweenId)
+                .SetLink(gameObject, LinkBehaviour.KillOnDisable);
+
+            sequence.Join(Rect.DOScale(scaleTarget, action.scaleDur).SetEase(action.scaleEase));
+            sequence.Join(Rect.DOLocalRotate(rotationTarget, action.rotDur).SetEase(action.rotEase));
         }
 
-        public void KillTween(bool scale = true, bool rotate = true)
+        public void KillTween()
         {
-            if (scale && rotate)
-            {
-                DOTween.Kill(_id);
-            }
-            else if (scale)
-                DOTween.Kill(_id+1);
-            else if (rotate)
-                DOTween.Kill(_id+2);
+            if (!string.IsNullOrEmpty(_tweenId))
+                DOTween.Kill(_tweenId);
         }
 
+        private static bool TryGetRandomAction(
+            IReadOnlyList<TransformAction> actions,
+            out TransformAction action)
+        {
+            if (actions == null || actions.Count == 0)
+            {
+                action = default;
+                return false;
+            }
+
+            action = actions[Random.Range(0, actions.Count)];
+            return true;
+        }
 
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            if (option.onActions.Count == 0) Debug.LogError("OnAction의 옵션이 비어있습니다.");
-            if (option.offActions.Count == 0) Debug.LogError("OffAction의 옵션이 비어있습니다.");
+            if (option == null) return;
+            if (option.onActions.Count == 0) Debug.LogWarning("On actions list is empty.", this);
+            if (option.offActions.Count == 0) Debug.LogWarning("Off actions list is empty.", this);
         }
 #endif
     }

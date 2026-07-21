@@ -9,5 +9,6 @@ namespace Interface
         bool IsDash { get; }
         
         bool TryDash();
+        void StopDash();
     }
 }

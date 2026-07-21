@@ -11,47 +11,77 @@ namespace Player
 {
     public class PlayerMovementModule : AbstractMovementModule, IDash
     {
-        [Header("ReferenceData")]
-        [field: SerializeField]
-        public DashDataSo OriginDashData { get; private set; }
+        [Header("Dash Data")]
+        [field: SerializeField] public DashDataSo OriginDashData { get; private set; }
+
         public DashDataSo DashData { get; private set; }
-        
-        private bool _canDash = true;
-        private float _crtMulti;
         public bool IsDash { get; private set; }
 
+        private bool _canDash = true;
+        private float _currentSpeedMultiplier = 1f;
+        private Tween _dashTween;
 
         private void Awake()
         {
-            CloneData();
+            CloneDashData();
         }
 
         private void FixedUpdate()
         {
-            if (IsDash)
-                Move(MoveDir * _crtMulti);
-            else
-                Move(MoveDir);
+            float multiplier = IsDash ? _currentSpeedMultiplier : 1f;
+            Move(MoveDir * multiplier);
         }
 
-        private void OnDestroy()
+        public bool TryDash()
         {
-            DestroyData();
+            if (!_canDash || DashData == null) return false;
+
+            StartDash();
+            RunDashCooldown(destroyCancellationToken).Forget();
+            return true;
         }
 
-        # region Data
-
-        private void DestroyData()
+        public void StopDash()
         {
-            if (DashData != null)
-                Destroy(DashData);
+            if (_dashTween != null && _dashTween.IsActive())
+                _dashTween.Kill();
+
+            _dashTween = null;
+            IsDash = false;
+            _currentSpeedMultiplier = 1f;
         }
 
-        private void CloneData()
+        private void StartDash()
+        {
+            StopDash();
+
+            IsDash = true;
+            _currentSpeedMultiplier = DashData.dashMulti;
+            _dashTween = DOTween.To(
+                    () => _currentSpeedMultiplier,
+                    value => _currentSpeedMultiplier = value,
+                    1f,
+                    DashData.dashDur)
+                .OnComplete(() => IsDash = false)
+                .OnKill(() => IsDash = false)
+                .SetLink(gameObject, LinkBehaviour.KillOnDisable);
+        }
+
+        private async UniTask RunDashCooldown(CancellationToken token)
+        {
+            _canDash = false;
+
+            float cooldown = DashData.dashDur + DashData.dashCool;
+            await UniTask.Delay(TimeSpan.FromSeconds(cooldown), cancellationToken: token);
+
+            _canDash = true;
+        }
+
+        private void CloneDashData()
         {
             if (OriginDashData == null)
             {
-                Debug.LogError("DashData가 할당되지 않았습니다.", this);
+                Debug.LogError("OriginDashData is not assigned.", this);
                 enabled = false;
                 return;
             }
@@ -59,40 +89,12 @@ namespace Player
             DashData = Instantiate(OriginDashData);
         }
 
-        # endregion Data
-
-        # region Dash
-
-        public bool TryDash()
+        private void OnDestroy()
         {
-            if (!_canDash || DashData == null)
-                return false;
+            StopDash();
 
-            DashLogic();
-            DashCooldown(destroyCancellationToken).Forget();
-            return true;
+            if (DashData != null)
+                Destroy(DashData);
         }
-
-        private void DashLogic() // 대쉬 구현
-        {
-            IsDash = true;
-            _crtMulti = DashData.dashMulti;
-            DOTween.To(() => _crtMulti
-                    , x => _crtMulti = x
-                    , 1
-                    , DashData.dashDur)
-                .OnComplete(() => IsDash = false)
-                .OnKill(() => IsDash = false)
-                .SetLink(gameObject, LinkBehaviour.KillOnDisable);
-        }
-
-        private async UniTask DashCooldown(CancellationToken token) // 대쉬 쿨타임
-        {
-            _canDash = false;
-            await UniTask.Delay(TimeSpan.FromSeconds(DashData.dashDur + DashData.dashCool), cancellationToken: token);
-            _canDash = true;
-        }
-
-        # endregion Dash
     }
 }

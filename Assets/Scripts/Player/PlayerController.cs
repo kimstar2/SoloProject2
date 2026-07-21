@@ -1,66 +1,68 @@
 using Agent;
 using Interface;
-using Interface.Marker;
 using Module;
-using RunTimeData;
-using SO.Event;
 using UnityEngine;
 
 namespace Player
 {
-    public class PlayerController : AbstractAgent , ICardDropTarget , IInitializer
+    public class PlayerController : AbstractAgent
     {
-        private PlayerMovementModule _mover;
-        private InputModule _input;
-        private StatDataLister _statDataLister;
+        public PlayerInput PlayerInput { get; private set; }
+        public PlayerCardReceiver CardReceiver { get; private set; }
+        public IEventer Eventer { get; private set; }
+        public IMoveable Mover { get; private set; }
+        public IDash Dasher { get; private set; }
+        public PlayerStatDataLister PlayerStatDataLister { get; private set; }
+        public IPressedAttackable Attacker { get; private set; }
         
-        [SerializeField] private CardApplyEventChannel cardApplyChannel;
-
+        public Vector2 MouseScreenPos { get; private set; }
+        public Camera MyCamera { get; private set; }
+        
         protected override void Awake()
         {
             base.Awake();
 
-            _mover = GetModule<PlayerMovementModule>();
-            _input = GetModule<InputModule>();
-            _statDataLister = GetModule<StatDataLister>();
+            MyCamera = Camera.main;
+            PlayerInput = GetRequiredModule<PlayerInput>();
+            CardReceiver = GetRequiredModule<PlayerCardReceiver>();
+            Mover = GetRequiredModule<IMoveable>();
+            Dasher = GetRequiredModule<IDash>();
+            Eventer = GetRequiredModule<IEventer>();
+            PlayerStatDataLister = GetRequiredModule<PlayerStatDataLister>();
+            Attacker = GetRequiredModule<IPressedAttackable>();
+
+            if (PlayerInput == null || CardReceiver == null || Mover == null || Dasher == null ||
+                Eventer == null || PlayerStatDataLister == null || Attacker == null)
+            {
+                enabled = false;
+                return;
+            }
+
+            if (MyCamera == null)
+                Debug.LogError("A camera tagged MainCamera is required.", this);
         }
 
         private void OnEnable()
         {
-            _input.OnMovementChannel.OnEvent += _mover.SetMoveDir;
-            _input.OnDashChannel.OnEvent += HandleDashInput;
+            Eventer?.EnableEvent();
         }
-        
+
         private void OnDisable()
         {
-            _input.OnMovementChannel.OnEvent -= _mover.SetMoveDir;
-            _input.OnDashChannel.OnEvent -= HandleDashInput;
-        }
-
-        public bool CanReceive(ICard card)
-        {
-            return true;
-        }
-
-        public bool ReceiveCard(ICard card)
-        {
-            bool applied = _statDataLister.ApplyCard(card);
-
-            if (!applied)
-                return false;
-
-            cardApplyChannel?.RaiseEvent(gameObject, card);
-
-            return true;
+            Eventer?.DisableEvent();
         }
         
-        private void HandleDashInput(bool pressed)
+        public void SetMouseScreenPos(Vector2 pos)
         {
-            if (!pressed) return;
+            MouseScreenPos = pos;
+        }
 
-            bool succeeded = _mover.TryDash();
+        public Vector2 GetMouseWorldPos()
+        {
+            if (MyCamera == null)
+                return transform.position;
 
-            if (!succeeded) return;
+            return MyCamera.ScreenToWorldPoint(MouseScreenPos);
         }
     }
 }
