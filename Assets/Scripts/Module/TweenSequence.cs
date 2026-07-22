@@ -13,7 +13,8 @@ namespace Module
         [SerializeField] private UpdateType updateType;
         [SerializeField] private bool independentTime;
         [SerializeField] private SequenceStepSo stepSo;
-        
+        [SerializeField] private bool forTargetID;
+
         private Transform _targetTransform;
         private RectTransform _targetRect;
         private CanvasGroup _targetCanvas;
@@ -56,30 +57,23 @@ namespace Module
             }
 
             _activeSequence = DOTween.Sequence();
-            _activeSequence
-                .SetId(GetEntityId())
+            _activeSequence.SetId(forTargetID ? targetGo.GetEntityId() : GetEntityId())
+
                 .SetUpdate(updateType, independentTime);
 
             bool hasTween = false;
 
             foreach (SequenceTweenStep step in stepSo.steps)
             {
-                if (step == null)
-                    continue;
+                if (step == null) continue;
 
                 Tween tween = CreateTween(step);
 
-                if (tween == null)
-                    continue;
+                if (tween == null) continue;
 
                 tween.SetEase(step.Ease);
-
                 ApplyRelative(tween, step);
-
-                InsertTween(
-                    _activeSequence,
-                    tween,
-                    step.InsertType);
+                InsertTween(_activeSequence, tween, step.InsertType);
 
                 hasTween = true;
             }
@@ -98,6 +92,56 @@ namespace Module
                 .OnComplete(HandleComplete);
 
             return true;
+        }
+
+        public void PlayForUnityEvent()
+        {
+            Kill();
+
+            if (stepSo == null || stepSo.steps == null || stepSo.steps.Count == 0)
+                Debug.LogWarning("TweenSequence has no configured steps.", this);
+
+            _activeSequence = DOTween.Sequence();
+            _activeSequence
+                .SetId(forTargetID ? targetGo.GetEntityId() : GetEntityId())
+                .SetUpdate(updateType, independentTime);
+
+            bool hasTween = false;
+
+            if (stepSo.steps != null)
+                foreach (SequenceTweenStep step in stepSo.steps)
+                {
+                    if (step == null)
+                        continue;
+
+                    Tween tween = CreateTween(step);
+
+                    if (tween == null)
+                        continue;
+
+                    tween.SetEase(step.Ease);
+
+                    ApplyRelative(tween, step);
+
+                    InsertTween(
+                        _activeSequence,
+                        tween,
+                        step.InsertType);
+
+                    hasTween = true;
+                }
+
+            if (!hasTween)
+            {
+                _activeSequence.Kill();
+                _activeSequence = null;
+            }
+
+            _activeSequence
+                .SetLink(
+                    targetGo,
+                    LinkBehaviour.KillOnDestroy)
+                .OnComplete(HandleComplete);
         }
 
         private Tween CreateTween(

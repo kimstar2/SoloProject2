@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using SO;
 using Struct;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using Utility;
 using Random = UnityEngine.Random;
@@ -11,6 +13,8 @@ namespace UI
 {
     public class OnMouseAction : ForRect, IPointerEnterHandler, IPointerExitHandler
     {
+        public UnityEvent onEvent;
+        public UnityEvent offEvent;
         [SerializeField] private TransformActionOptionSo option;
 
         private string _tweenId;
@@ -26,7 +30,7 @@ namespace UI
             if (!TryGetRandomAction(option?.onActions, out TransformAction action)) return;
 
             Play(action);
-            option.onEvent?.Invoke();
+            onEvent?.Invoke();
         }
 
         public void OnPointerExit(PointerEventData eventData)
@@ -34,7 +38,7 @@ namespace UI
             if (!TryGetRandomAction(option?.offActions, out TransformAction action)) return;
 
             Play(action);
-            option.offEvent?.Invoke();
+            offEvent?.Invoke();
         }
 
         private void Play(TransformAction action)

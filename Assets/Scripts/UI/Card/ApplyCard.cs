@@ -5,13 +5,13 @@ namespace UI.Card
 {
     public class ApplyCard : MonoBehaviour // Test
     {
-        [SerializeField] GameObject cardPrefab;
+        [SerializeField] List<GameObject> cardPrefabs;
         [SerializeField] Transform target;
-        Stack<GameObject> _crtCardStack = new();
+        private readonly Stack<GameObject> _crtCardStack = new();
         
         public void Add()
         {
-            _crtCardStack.Push(Instantiate(cardPrefab, target));
+            _crtCardStack.Push(Instantiate(cardPrefabs[Random.Range(0,cardPrefabs.Count)], target));
         }
 
         public void Remove()

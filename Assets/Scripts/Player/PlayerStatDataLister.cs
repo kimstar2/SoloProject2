@@ -46,12 +46,13 @@ namespace Player
 
         public bool ApplyPermanentCard(ICard card)
         {
-            if (card?.CardDefinition == null) return false;
+            if (card == null) return false;
 
             bool applied = false;
 
-            foreach (CardDataSo modifier in card.CardDefinition.StatModifiers)
+            foreach (ICardDataProvider provider in card.GetApplyData())
             {
+                CardDataSo modifier = provider.CardData;
                 if (modifier == null) continue;
                 if (!_runtimeStatMap.TryGetValue(modifier.statType, out RunTimeStat runtimeStat)) continue;
 
@@ -63,10 +64,11 @@ namespace Player
 
         public bool CanApplyCard(ICard card)
         {
-            if (card?.CardDefinition == null) return false;
+            if (card == null) return false;
 
-            foreach (CardDataSo modifier in card.CardDefinition.StatModifiers)
+            foreach (ICardDataProvider provider in card.GetApplyData())
             {
+                CardDataSo modifier = provider.CardData;
                 if (modifier != null && _runtimeStatMap.ContainsKey(modifier.statType))
                     return true;
             }

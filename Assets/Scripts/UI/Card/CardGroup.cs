@@ -140,5 +140,15 @@ namespace UI.Card
             
             NotifyDeckChanged();
         }
+
+        public bool CardHasDragging()
+        {
+            foreach (ICard card in _cards)
+            {
+                if (card.IsDragging)
+                    return true;
+            }
+            return false;
+        }
     }
 }

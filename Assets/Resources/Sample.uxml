@@ -1,0 +1,3 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1; width: 10%; height: 100%; background-image: url(&quot;project://database/Assets/Sprite/Honeti/PixelArtGUI/Textures/Icons/32/Apple.png?fileID=2800000&amp;guid=b1698ce191a2c704cbbe4d813e07db2f&amp;type=3#Apple&quot;);"/>
+</ui:UXML>

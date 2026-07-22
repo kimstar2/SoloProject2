@@ -10,5 +10,6 @@ namespace Interface
         bool IsInDeck { get; }
 
         void SetLayout(Vector2 pos, float zRot);
+        ICardDataProvider[] GetApplyData();
     }
 }

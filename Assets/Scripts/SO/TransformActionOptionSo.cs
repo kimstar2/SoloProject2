@@ -9,8 +9,6 @@ namespace SO
     public class TransformActionOptionSo : ScriptableObject
     {
         public List<TransformAction> onActions = new();
-        public UnityEvent onEvent;
         public List<TransformAction> offActions = new();
-        public UnityEvent offEvent;
     }
 }

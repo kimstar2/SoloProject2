@@ -1,3 +1,4 @@
+
 using DG.Tweening;
 using Interface;
 using SO;
@@ -54,6 +55,10 @@ namespace UI.Card
             _layoutSequence?.Kill();
             _layoutSequence = null;
         }
-        
+
+        public ICardDataProvider[] GetApplyData()
+        {
+            return GetComponentsInChildren<ICardDataProvider>();
+        }
     }
 }

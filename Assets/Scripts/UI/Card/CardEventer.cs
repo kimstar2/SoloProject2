@@ -1,18 +1,21 @@
 using Interface;
 using Module;
 using Module.UI;
+using SO.Event;
 using UnityEngine;
 
 namespace UI.Card
 {
     public class CardEventer : ModuleCompo, IEventer
     {
+        [SerializeField] private CardValidateEventChannel cardValidateChannel;
         private Card _myCard;
         private CardDrag _cardDrag;
         private CardGroup _myCardGroup;
 
         private CanvasGroupSetter _canvasGroupSetter;
         private TweenSequence _sequence;
+        private OnMouseAction _onMouseAction;
         private bool _eventsEnabled;
 
         protected override void Awake()
@@ -21,6 +24,7 @@ namespace UI.Card
             _myCard = GetComponentInParent<Card>();
             _cardDrag = GetComponentInParent<CardDrag>();
             _myCardGroup = GetComponentInParent<CardGroup>();
+            _onMouseAction = transform.parent.GetComponentInChildren<OnMouseAction>();
 
             _canvasGroupSetter = GetRequiredModule<CanvasGroupSetter>();
             _sequence = GetRequiredModule<TweenSequence>();
@@ -63,6 +67,12 @@ namespace UI.Card
 
         private void HandleCompletedSeq() => Destroy(_myCard.gameObject);
 
+        private void HandleConnectValidateChannel()
+        {
+            if (_myCardGroup.CardHasDragging()) return;
+            cardValidateChannel.RaiseEvent(_myCard);
+        }
+
         #endregion Handler
 
         private void OnEnable() => EnableEvent();
@@ -78,6 +88,9 @@ namespace UI.Card
             _cardDrag.OnDropSuccessEvent += HandleDropSuccess;
 
             _sequence.OnCompleted += HandleCompletedSeq;
+            
+            _onMouseAction.onEvent.AddListener(HandleConnectValidateChannel);
+            
             _eventsEnabled = true;
         }
 
@@ -91,6 +104,9 @@ namespace UI.Card
             _cardDrag.OnDropSuccessEvent -= HandleDropSuccess;
 
             _sequence.OnCompleted -= HandleCompletedSeq;
+            
+            _onMouseAction.onEvent.RemoveListener(HandleConnectValidateChannel);
+            
             _eventsEnabled = false;
         }
     }
